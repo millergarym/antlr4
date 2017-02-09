@@ -9,14 +9,17 @@ package org.antlr.v4.codegen.model;
 import org.antlr.v4.codegen.OutputModelFactory;
 import org.antlr.v4.codegen.model.chunk.ActionChunk;
 import org.antlr.v4.codegen.model.chunk.ActionText;
+import org.antlr.v4.tool.ErrorType;
 import org.antlr.v4.tool.Grammar;
 
+import java.util.Iterator;
 import java.util.Map;
 
 /** */
 public class ParserFile extends OutputFile {
 	public String genPackage; // from -package cmd-line
 	public String antlrRuntimeImport; // from -runtimeImport cmd-line
+	public String addImport; // from -Dimport cmd-line
 	public String exportMacro; // from -DexportMacro cmd-line
 	public boolean genListener; // from -listener cmd-line
 	public boolean genVisitor; // from -visitor cmd-line
@@ -40,5 +43,13 @@ public class ParserFile extends OutputFile {
 		if (g.getOptionString("contextSuperClass") != null) {
 			contextSuperClass = new ActionText(null, g.getOptionString("contextSuperClass"));
 		}
+		if ( factory.getGrammar().tool.addImports.size() > 0 ) {
+			Iterator<String> iter = factory.getGrammar().tool.addImports.iterator();
+			addImport = iter.next(); 
+			if ( iter.hasNext() ) {
+				factory.getGrammar().tool.errMgr.toolError(ErrorType.INTERNAL_ERROR, "multiple addImport not implemented");
+			}
+		}
+		
 	}
 }

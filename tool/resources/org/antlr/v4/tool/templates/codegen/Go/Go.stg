@@ -21,6 +21,9 @@ import "<file.antlrRuntimeImport>"
 <else>
 import "github.com/antlr/antlr4/runtime/Go/antlr"
 <endif>
+<if(file.addImport)>
+import "<file.addImport>"
+<endif>
 
 
 <if(namedActions.header)>
@@ -70,9 +73,9 @@ Exit<lname; format="cap">(ctx I<lname; format="cap">Context)}; separator="\n\n">
 
 // Imported rules
 <file.listenerNamesImported:{lname | // Enter<lname; format="cap"> is called when production <lname> is entered.
-Enter<lname; format="cap">(ctx *<lname; format="cap">Context)
+Enter<lname; format="cap">(ctx parser.I<lname; format="cap">Context)
 // Exit<lname; format="cap"> is called when production <lname> is exited.
-Exit<lname; format="cap">(ctx *<lname; format="cap">Context)}; separator="\n\n">
+Exit<lname; format="cap">(ctx parser.I<lname; format="cap">Context)}; separator="\n\n">
 
 
 }
@@ -126,9 +129,9 @@ func (s *Base<file.grammarName>Listener) Exit<lname; format="cap">(ctx I<lname; 
 //
 
 <file.listenerNamesImported:{lname | // Enter<lname; format="cap"> is called when production <lname> is entered.
-func (s *Base<file.grammarName>Listener) Enter<lname; format="cap">(ctx *<lname; format="cap">Context) {\}
+func (s *Base<file.grammarName>Listener) Enter<lname; format="cap">(ctx parser.I<lname; format="cap">Context) {\}
 // Exit<lname; format="cap"> is called when production <lname> is exited.
-func (s *Base<file.grammarName>Listener) Exit<lname; format="cap">(ctx *<lname; format="cap">Context) {\}}; separator="\n\n">
+func (s *Base<file.grammarName>Listener) Exit<lname; format="cap">(ctx parser.I<lname; format="cap">Context) {\}}; separator="\n\n">
 
 >>
 
@@ -486,7 +489,7 @@ func (p *<parser.name>) <currentRule.name>(_p int<args:{a | , <a.name> <a.type>}
 	var _parentctx antlr.ParserRuleContext = p.GetParserRuleContext()
 	_parentState := p.GetState()
 	localctx = New<currentRule.ctxType>(p, p.GetParserRuleContext(), _parentState<args:{a | , <a.name>}>)
-	var _prevctx I<currentRule.ctxType> = localctx
+	var _prevctx <currentRule.rule.prefix>I<currentRule.ctxType> = localctx
 	var _ antlr.ParserRuleContext = _prevctx // TODO: To prevent unused variable warning.
 	_startState := <currentRule.startState>
 	p.EnterRecursionRule(localctx, <currentRule.startState>, <parser.name>RULE_<currentRule.name>, _p)
@@ -800,7 +803,7 @@ InvokeRule(r, argExprsChunks) ::= <<
 	var _x = p.<r.name; format="cap">(<argExprsChunks>)
 	<endif>
 
-    <r.labels:{l | <labelref(l)> = _x}; separator="\n">
+    <r.labels:{l | <labelrefwithimport(l)> _x ) }; separator="\n">
 
 	<else>
 	<if(r.ast.options.p)>
@@ -817,7 +820,8 @@ MatchToken(m) ::= <<
 	p.SetState(<m.stateNumber>)
 	<if(m.labels)>
     	var _m = p.Match(<parser.name><m.name>)
-        <m.labels:{l | <labelref(l)> = _m}; separator="\n">
+    	//here
+        <m.labels:{l | <labelrefwithimport(l)>  _m ) }; separator="\n">
 	<else>
     	p.Match(<parser.name><m.name>)
 	<endif>
@@ -837,7 +841,7 @@ p.SetState(<m.stateNumber>)
 
 var _lt = p.GetTokenStream().LT(1)<! TODO: Should LT be called always like InvokeRule and MatchToken? !>
 
-<m.labels:{l | <labelref(l)> = _lt}; separator="\n">
+<m.labels:{l | <labelrefwithimport(l)> _lt ) }; separator="\n">
 
 <endif>
 <if(capture)>
@@ -847,7 +851,8 @@ var _lt = p.GetTokenStream().LT(1)<! TODO: Should LT be called always like Invok
 <if(invert)>if <m.varName> \<= 0 || <expr> <else>if !(<expr>)<endif> {
 	<if(m.labels)>
 	var _ri = p.GetErrorHandler().RecoverInline(p)
-    <m.labels:{l | <labelref(l)> = _ri}; separator="\n">
+    <m.labels:{l | <labelrefwithimport(l)>  _ri ) }; separator="\n">
+
 	<else>
 	p.GetErrorHandler().RecoverInline(p)
 	<endif>
@@ -1421,9 +1426,13 @@ func (s *<struct.name>) Accept(visitor antlr.ParseTreeVisitor) interface{} {
 
 /** If we don't know location of label def x, use this template */
 labelref(x) ::= "<if(!x.isLocal)>localctx.(*<x.ctx.prefix><x.ctx.name>).<endif><x.name>"
-
-labelrefwithimport(x) ::= "<if(!x.isLocal)>localctx.(*parser.<x.ctx.name>).<endif>Set<x.name>( "
-labelrefwithimportget(x) ::= "<if(!x.isLocal)>localctx.(*parser.<x.ctx.name>).<endif>Get<x.name>() "
+//here
+labelrefwithimport(x) ::= <<
+<if(!x.isLocal)>localctx.(parser.I<x.ctx.name; format="cap">).<endif>Set<x.name; format="cap">( 
+>>   
+labelrefwithimportget(x) ::= <<
+<if(!x.isLocal)>localctx.(parser.I<x.ctx.name>).<endif>Get<x.name; format="cap">()
+>>
 
 /** For any action chunk, what is correctly-typed context struct ptr? */
 ctx(actionChunk) ::= "localctx.(*<actionChunk.ctx.name>)"
