@@ -70,9 +70,9 @@ Exit<lname; format="cap">(ctx I<lname; format="cap">Context)}; separator="\n\n">
 
 // Imported rules
 <file.listenerNamesImported:{lname | // Enter<lname; format="cap"> is called when production <lname> is entered.
-Enter<lname; format="cap">(ctx parser.I<lname; format="cap">Context)
+Enter<lname; format="cap">(ctx *<lname; format="cap">Context)
 // Exit<lname; format="cap"> is called when production <lname> is exited.
-Exit<lname; format="cap">(ctx parser.I<lname; format="cap">Context)}; separator="\n\n">
+Exit<lname; format="cap">(ctx *<lname; format="cap">Context)}; separator="\n\n">
 
 
 }
@@ -126,9 +126,9 @@ func (s *Base<file.grammarName>Listener) Exit<lname; format="cap">(ctx I<lname; 
 //
 
 <file.listenerNamesImported:{lname | // Enter<lname; format="cap"> is called when production <lname> is entered.
-func (s *Base<file.grammarName>Listener) Enter<lname; format="cap">(ctx parser.I<lname; format="cap">Context) {\}
+func (s *Base<file.grammarName>Listener) Enter<lname; format="cap">(ctx *<lname; format="cap">Context) {\}
 // Exit<lname; format="cap"> is called when production <lname> is exited.
-func (s *Base<file.grammarName>Listener) Exit<lname; format="cap">(ctx parser.I<lname; format="cap">Context) {\}}; separator="\n\n">
+func (s *Base<file.grammarName>Listener) Exit<lname; format="cap">(ctx *<lname; format="cap">Context) {\}}; separator="\n\n">
 
 >>
 
@@ -409,7 +409,7 @@ RuleFunction(currentRule, args, code, locals, ruleCtx, altLabelCtxs, namedAction
 
 
 <endif>
-func (p *<parser.name>) <currentRule.name; format="cap">(<currentRule.args:{a | <a.name> <a.type>}; separator=", ">) (localctx I<currentRule.ctxType>) {
+func (p *<parser.name>) <currentRule.name; format="cap">(<currentRule.args:{a | <a.name> <a.type>}; separator=", ">) (localctx <currentRule.rule.prefix>I<currentRule.ctxType>) {
 	localctx = New<currentRule.ctxType>(p, p.GetParserRuleContext(), p.GetState()<currentRule.args:{a | , <a.name>}>)
 	p.EnterRule(localctx, <currentRule.startState>, <parser.name>RULE_<currentRule.name>)
 	<if(namedActions.init)>
@@ -478,11 +478,11 @@ LeftRecursiveRuleFunction(currentRule, args, code, locals, ruleCtx, altLabelCtxs
 
 
 <endif>
-func (p *<parser.name>) <currentRule.name; format="cap">(<args:{a | <a.name> <a.type>}; separator=", ">) (localctx I<currentRule.ctxType>) {
+func (p *<parser.name>) <currentRule.name; format="cap">(<args:{a | <a.name> <a.type>}; separator=", ">) (localctx *<currentRule.ctxType>) {
 	return p.<currentRule.name>(0<args:{a | , <a.name>}>)
 }
 
-func (p *<parser.name>) <currentRule.name>(_p int<args:{a | , <a.name> <a.type>}>) (localctx I<currentRule.ctxType>) {
+func (p *<parser.name>) <currentRule.name>(_p int<args:{a | , <a.name> <a.type>}>) (localctx *<currentRule.ctxType>) {
 	var _parentctx antlr.ParserRuleContext = p.GetParserRuleContext()
 	_parentState := p.GetState()
 	localctx = New<currentRule.ctxType>(p, p.GetParserRuleContext(), _parentState<args:{a | , <a.name>}>)
@@ -1104,6 +1104,9 @@ Set<a.name; format="cap">(<a.type>)}; separator="\n\n">
 	// Is<struct.name> differentiates from other interfaces.
 	Is<struct.name>()
 }
+<if(struct.isImported)>
+*/
+<endif>
 
 type <struct.name> struct {
 	<if(contextSuperClass)>*<contextSuperClass><else>*antlr.BaseParserRuleContext<endif>
@@ -1218,9 +1221,6 @@ func (s *<struct.name>) GetRuleContext() antlr.RuleContext {
 func (s *<struct.name>) ToStringTree(ruleNames []string, recog antlr.Recognizer) string {
 	return antlr.TreesStringTree(s, ruleNames, recog)
 }
-<if(struct.isImported)>
-*/
-<endif>
 
 <if(dispatchMethods)>
 
@@ -1286,6 +1286,9 @@ Set<a.name; format="cap">(<a.type>)}; separator="\n\n">
 	// Is<struct.name> differentiates from other interfaces.
 	Is<struct.name>()
 }
+<if(struct.isImported)>
+*/
+<endif>
 
 type <struct.name> struct {
 	*<currentRule.name; format="cap">Context
@@ -1345,9 +1348,6 @@ func (s *<struct.name>) GetRuleContext() antlr.RuleContext {
 
 <dispatchMethods; separator="\n\n">
 <endif>
-<if(struct.isImported)>
-*/
-<endif>
 
 >>
 
@@ -1365,9 +1365,9 @@ ruleContextListDeclsMake(struct) ::= <<
     <struct.ruleContextListDecls:{a | 
     <if(a.enclosingRuleRunction.isImported)>
         // Get<a.name; format="cap"> returns the <a.name> rule context list.
-        Get<a.name; format="cap">() []parser.I<a.ctxName>
+        Get<a.name; format="cap">() []*<a.ctxName>
         // Set<a.name; format="cap"> sets the <a.name> rule context list.
-        Set<a.name; format="cap">([]parser.I<a.ctxName>) 
+        Set<a.name; format="cap">([]*<a.ctxName>) 
     <else>
         // Get<a.name; format="cap"> returns the <a.name> rule context list.
         Get<a.name; format="cap">() []<a.prefix>I<a.ctxName>
@@ -1392,11 +1392,19 @@ ruleContextListDeclsImpl (struct) ::= <<
 >>
 
 ListenerDispatchMethod(method) ::= <<
-func (s *<struct.name>) <if(method.isEnter)>Enter<else>Exit<endif>Rule(listener antlr.ParseTreeListener) {
-	if listenerT, ok := listener.(<parser.grammarName>Listener); ok {
-		listenerT.<if(method.isEnter)>Enter<else>Exit<endif><struct.derivedFromName; format="cap">(s)
-	}
+<if(method.isEnter)>
+func (s *<struct.name>) EnterRule(listener antlr.ParseTreeListener) {
+    if listenerT, ok := listener.(<parser.grammarName>Listener); ok {
+        listenerT.Enter<struct.derivedFromName; format="cap">(s)
+    }
 }
+<else>
+func (s *<struct.name>) ExitRule(listener antlr.ParseTreeListener) {
+    if listenerT, ok := listener.(<parser.grammarName>Listener); ok {
+        listenerT.Exit<struct.derivedFromName; format="cap">(s)
+    }
+}
+<endif>
 >>
 
 VisitorDispatchMethod(method) ::= <<
