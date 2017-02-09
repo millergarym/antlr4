@@ -15,6 +15,7 @@ public class RuleActionFunction extends OutputModelObject {
 	public String name;
 	public String ctxType;
 	public int ruleIndex;
+	public Rule rule;
 	public String grammarName;
 	
 	/** Map actionIndex to Action */
@@ -25,6 +26,7 @@ public class RuleActionFunction extends OutputModelObject {
 		super(factory);
 		name = r.name;
 		ruleIndex = r.index;
+		rule = r;
 		this.ctxType = ctxType;
 		grammarName = factory.getGrammar().name;
 	}

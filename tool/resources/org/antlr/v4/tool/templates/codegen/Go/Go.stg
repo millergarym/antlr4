@@ -291,9 +291,9 @@ func (p *<parser.name>) Sempred(localctx antlr.RuleContext, ruleIndex, predIndex
 	switch ruleIndex {
 	<if(parser.sempredFuncs.values)>
 	<parser.sempredFuncs.values:{f | case <f.ruleIndex>:
-		var t *<f.name; format="cap">Context = nil
+		var t *<f.rule.prefix><f.name; format="cap">Context = nil
 		//here 22
-		if localctx != nil { t = localctx.(*<f.name; format="cap">Context) \}
+		if localctx != nil { t = localctx.(*<f.rule.prefix><f.name; format="cap">Context) \}
 		return p.<f.name; format="cap">_Sempred(t, predIndex)}; separator="\n\n">
 
 
