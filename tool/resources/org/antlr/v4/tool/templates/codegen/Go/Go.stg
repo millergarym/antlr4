@@ -413,7 +413,8 @@ RuleFunction(currentRule, args, code, locals, ruleCtx, altLabelCtxs, namedAction
 
 <endif>
 func (p *<parser.name>) <currentRule.name; format="cap">(<currentRule.args:{a | <a.name> <a.type>}; separator=", ">) (localctx <currentRule.rule.prefix>I<currentRule.ctxType>) {
-	localctx = New<currentRule.ctxType>(p, p.GetParserRuleContext(), p.GetState()<currentRule.args:{a | , <a.name>}>)
+    
+	localctx = <currentRule.rule.prefix>New<currentRule.ctxType>(p, p.GetParserRuleContext(), p.GetState()<currentRule.args:{a | , <a.name>}>)
 	p.EnterRule(localctx, <currentRule.startState>, <parser.name>RULE_<currentRule.name>)
 	<if(namedActions.init)>
 	<namedActions.init>
@@ -786,11 +787,6 @@ bitsetInlineComparison(s, bits) ::= <%
 <bits.ttypes:{ttype | <s.varName> == <parser.name><ttype>}; separator=" || ">
 %>
 
-//    <if(r.enclosingRuleRunction.isImported)>
-//        <r.labels:{l | <labelrefwithimport(l)> _x )}; separator="\n">
-//    <else>
-//        <r.labels:{l | <labelref(l)> = _x}; separator="\n">
-//    <endif>
 
 InvokeRule(r, argExprsChunks) ::= <<
 {
@@ -803,7 +799,12 @@ InvokeRule(r, argExprsChunks) ::= <<
 	var _x = p.<r.name; format="cap">(<argExprsChunks>)
 	<endif>
 
-    <r.labels:{l | <labelrefwithimport(l)> _x ) }; separator="\n">
+    <if(r.enclosingRuleRunction.isImported)>
+        <r.labels:{l | <labelrefwithimport(l)> _x )}; separator="\n">
+    <else>
+        <r.labels:{l | <labelref(l)> = _x}; separator="\n">
+    <endif>
+
 
 	<else>
 	<if(r.ast.options.p)>
