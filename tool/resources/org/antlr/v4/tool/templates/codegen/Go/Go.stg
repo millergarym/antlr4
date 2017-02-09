@@ -995,7 +995,7 @@ ContextTokenListIndexedGetterDecl(t) ::= <<
 >>
 
 ContextRuleGetterDecl(r) ::= <<
-<r.name; format="cap">() I<r.ctxName> {
+<r.name; format="cap">() <r.prefix>I<r.ctxName> {
     var t = s.GetTypedRuleContext(reflect.TypeOf((<r.prefix>I<r.ctxName>)(nil)).Elem(), 0)
 
     if t == nil {

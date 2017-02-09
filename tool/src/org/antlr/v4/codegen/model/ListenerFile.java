@@ -55,6 +55,13 @@ public class ListenerFile extends OutputFile {
 		grammarName = g.name;
 		namedActions = buildNamedActions(factory.getGrammar());
 		for (Rule r : g.rules.values()) {
+			String importedG = g.tool.importRules_Alts.get(r.name);
+			if ( importedG != null ) {
+				String prefix = g.tool.importParamsMap.get(importedG);
+				r.prefix = prefix;
+				r.imported = true;
+			}
+
 //			System.out.println("ListenerFile " +  r.g.name.equals( r.importedG.name) + " \t" + r.name + " " + r.g.name + " " + r.importedG.name);
 			
 			Map<String, List<Pair<Integer,AltAST>>> labels = r.getAltLabels();

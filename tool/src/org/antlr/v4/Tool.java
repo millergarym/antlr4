@@ -360,6 +360,16 @@ public class Tool {
 		GrammarTransformPipeline transform = new GrammarTransformPipeline(g, this);
 		transform.process();
 
+		System.out.println("---------------" );
+		for(  String a : g.tool.importRules_Alts.values() ) {
+			System.out.println("external " + a );
+		}
+		System.out.println("---------------" );
+		for( Rule a : g.rules.values() ) {
+			System.out.println("**rules " +  a.name + " '" + a.prefix + "'");			
+		}
+		System.out.println("---------------" );
+
 		LexerGrammar lexerg;
 		GrammarRootAST lexerAST;
 		if ( g.ast!=null && g.ast.grammarType== ANTLRParser.COMBINED &&
@@ -384,7 +394,14 @@ public class Tool {
 		if ( g.implicitLexer!=null ) g.importVocab(g.implicitLexer);
 //		System.out.println("tokens="+g.tokenNameToTypeMap);
 //		System.out.println("strings="+g.stringLiteralToTypeMap);
+		
 		processNonCombinedGrammar(g, gencode);
+		System.out.println("---------------" );
+		for( Rule a : g.rules.values() ) {
+			System.out.println("**rules " +  a.name + " '" + a.prefix + "'");			
+		}
+		System.out.println("---------------" );
+		
 	}
 
 	public void processNonCombinedGrammar(Grammar g, boolean gencode) {

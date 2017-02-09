@@ -91,6 +91,12 @@ public class OutputModelController {
 
 		Grammar g = delegate.getGrammar();
 		for (Rule r : g.rules.values()) {
+			String importedG = g.tool.importRules_Alts.get(r.name);
+			if ( importedG != null ) {
+				String prefix = g.tool.importParamsMap.get(importedG);
+				r.prefix = prefix;
+				r.imported = true;
+			}
 			buildRuleFunction(file.parser, r);
 		}
 
@@ -105,6 +111,12 @@ public class OutputModelController {
 
 		Grammar g = delegate.getGrammar();
 		for (Rule r : g.rules.values()) {
+			String importedG = g.tool.importRules_Alts.get(r.name);
+			if ( importedG != null ) {
+				String prefix = g.tool.importParamsMap.get(importedG);
+				r.prefix = prefix;
+				r.imported = true;
+			}
 			buildLexerRuleActions(file.lexer, r);
 		}
 

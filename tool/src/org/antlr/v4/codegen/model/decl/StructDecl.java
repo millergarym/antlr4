@@ -28,8 +28,6 @@ public class StructDecl extends Decl {
 	public boolean provideCopyFrom;
 //	public String grammarName;
 //	public String importedGrammarName;
-	public boolean isImported;
-	public String prefix;
 
 	@ModelElement public OrderedHashSet<Decl> attrs = new OrderedHashSet<Decl>();
 	@ModelElement public OrderedHashSet<Decl> getters = new OrderedHashSet<Decl>();
@@ -49,9 +47,7 @@ public class StructDecl extends Decl {
 	public OrderedHashSet<Decl> attributeDecls = new OrderedHashSet<Decl>();
 
 	public StructDecl(OutputModelFactory factory, Rule r, String prefix, boolean imported) {
-		super(factory, factory.getGenerator().getTarget().getRuleFunctionContextStructName(r));
-		this.isImported = imported;
-		this.prefix = prefix;
+		super(factory, factory.getGenerator().getTarget().getRuleFunctionContextStructName(r), prefix, imported);
 		addDispatchMethods(r);
 		derivedFromName = r.name;
 		provideCopyFrom = r.hasAltSpecificContexts();
@@ -105,7 +101,7 @@ public class StructDecl extends Decl {
 	}
 
 	public void addDecl(Attribute a) {
-		addDecl(new AttributeDecl(factory, a));
+		addDecl(new AttributeDecl(factory, a, prefix, isImported));
 	}
 
 	public void addDecls(Collection<Attribute> attrList) {

@@ -102,7 +102,7 @@ public class RuleFunction extends OutputModelObject {
 				args = new ArrayList<AttributeDecl>();
 				ruleCtx.addDecls(decls);
 				for (Attribute a : decls) {
-					args.add(new AttributeDecl(factory, a));
+					args.add(new AttributeDecl(factory, a,r.prefix,r.imported));
 				}
 				ruleCtx.ctorAttrs = args;
 			}
@@ -257,11 +257,11 @@ public class RuleFunction extends OutputModelObject {
 							 .getRuleFunctionContextStructName(rref);
 			if ( needList) {
 				if(factory.getGenerator().getTarget().supportsOverloadedMethods())
-					decls.add( new ContextRuleListGetterDecl(factory, refLabelName, ctxName) );
-				decls.add( new ContextRuleListIndexedGetterDecl(factory, refLabelName, ctxName) );
+					decls.add( new ContextRuleListGetterDecl(factory, refLabelName, ctxName, rref.prefix, rref.imported) );
+				decls.add( new ContextRuleListIndexedGetterDecl(factory, refLabelName, ctxName, rref.prefix, rref.imported) ); // TODO should there be an else???
 			}
 			else {
-				decls.add( new ContextRuleGetterDecl(factory, refLabelName, ctxName, optional) );
+				decls.add( new ContextRuleGetterDecl(factory, refLabelName, ctxName, optional, rref.prefix, rref.imported) );
 			}
 		}
 		else {

@@ -48,6 +48,21 @@ public class RuleCollector extends GrammarTreeVisitor {
 	public void process(GrammarAST ast) { visitGrammar(ast); }
 
 	@Override
+	protected void exitGrammarSpec(GrammarAST tree) { 
+		System.out.println("exitGrammarSpec---------------" );
+
+		for (Rule r : g.rules.values()) {
+			System.out.println("**rules " +  r.name + " '" + r.prefix + "'");						
+			String importedG = g.tool.importRules_Alts.get(r.name);
+			if ( importedG != null ) {
+				String prefix = g.tool.importParamsMap.get(importedG);
+				r.prefix = prefix;
+				r.imported = true;
+			}
+		}		
+	}
+	
+	@Override
 	public void discoverRule(RuleAST rule, GrammarAST ID,
 							 List<GrammarAST> modifiers, ActionAST arg,
 							 ActionAST returns, GrammarAST thrws,
@@ -58,6 +73,7 @@ public class RuleCollector extends GrammarTreeVisitor {
 		int numAlts = block.getChildCount();
 		Rule r;
 		if ( LeftRecursiveRuleAnalyzer.hasImmediateRecursiveRuleRefs(rule, ID.getText()) ) {
+			System.out.println("RuleCollector " + g.name.equals(rule.g.name) + " \t" + rule.getRuleName() + " " + g.name + " " + rule.g.name);
 			if ( !g.name.equals(rule.g.name) ) {
 				String prefix = g.tool.importParamsMap.get(rule.g.name);
 				g.tool.importRules_Alts.put(ID.getText(),rule.g.name);

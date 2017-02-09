@@ -61,6 +61,14 @@ public abstract class Recognizer extends OutputModelObject {
 
 		ruleNames = g.rules.keySet();
 		rules = g.rules.values();
+		for (Rule r : g.rules.values()) {
+			String importedG = g.tool.importRules_Alts.get(r.name);
+			if ( importedG != null ) {
+				String prefix = g.tool.importParamsMap.get(importedG);
+				r.prefix = prefix;
+				r.imported = true;
+			}
+		}		
 		atn = new SerializedATN(factory, g.atn);
 		if (g.getOptionString("superClass") != null) {
 			superClass = new ActionText(null, g.getOptionString("superClass"));

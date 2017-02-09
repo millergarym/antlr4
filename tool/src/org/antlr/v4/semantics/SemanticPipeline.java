@@ -75,7 +75,18 @@ public class SemanticPipeline {
 
 		// STORE RULES IN GRAMMAR
 		for (Rule r : ruleCollector.rules.values()) {
+			System.out.println("SemanticPipeline---------------" );
+			
+			String importedG = g.tool.importRules_Alts.get(r.name);
+			if ( importedG != null ) {
+				System.out.println("**rules " +  r.name + " '" + r.prefix + "'");						
+				
+				String prefix = g.tool.importParamsMap.get(importedG);
+				r.prefix = prefix;
+				r.imported = true;
+			}
 			g.defineRule(r);
+			System.out.println("SemanticPipeline---------------" );
 		}
 
 		// COLLECT SYMBOLS: RULES, ACTIONS, TERMINALS, ...
