@@ -489,7 +489,7 @@ func (p *<parser.name>) <currentRule.name; format="cap">(<args:{a | <a.name> <a.
 func (p *<parser.name>) <currentRule.name>(_p int<args:{a | , <a.name> <a.type>}>) (localctx <currentRule.rule.prefix>I<currentRule.ctxType>) {
 	var _parentctx antlr.ParserRuleContext = p.GetParserRuleContext()
 	_parentState := p.GetState()
-	localctx = New<currentRule.ctxType>(p, p.GetParserRuleContext(), _parentState<args:{a | , <a.name>}>)
+	localctx = <currentRule.rule.prefix>New<currentRule.ctxType>(p, p.GetParserRuleContext(), _parentState<args:{a | , <a.name>}>)
 	var _prevctx <currentRule.rule.prefix>I<currentRule.ctxType> = localctx
 	var _ antlr.ParserRuleContext = _prevctx // TODO: To prevent unused variable warning.
 	_startState := <currentRule.startState>
@@ -1110,9 +1110,6 @@ Set<a.name; format="cap">(<a.type>)}; separator="\n\n">
 	// Is<struct.name> differentiates from other interfaces.
 	Is<struct.name>()
 }
-<if(struct.isImported)>
-*/
-<endif>
 
 type <struct.name> struct {
 	<if(contextSuperClass)>*<contextSuperClass><else>*antlr.BaseParserRuleContext<endif>
@@ -1237,6 +1234,10 @@ func (s *<struct.name>) ToStringTree(ruleNames []string, recog antlr.Recognizer)
 
 <extensionMembers; separator="\n\n">
 <endif>
+<if(struct.isImported)>
+*/
+<endif>
+
 >>
 
 AltLabelStructDecl(struct, attrs, getters, dispatchMethods, tokenDecls, tokenTypeDecls, tokenListDecls, ruleContextDecls, ruleContextListDecls, attributeDecls) ::= <<
@@ -1292,9 +1293,6 @@ Set<a.name; format="cap">(<a.type>)}; separator="\n\n">
 	// Is<struct.name> differentiates from other interfaces.
 	Is<struct.name>()
 }
-<if(struct.isImported)>
-*/
-<endif>
 
 type <struct.name> struct {
 	*<currentRule.name; format="cap">Context
@@ -1353,6 +1351,9 @@ func (s *<struct.name>) GetRuleContext() antlr.RuleContext {
 <if(dispatchMethods)>
 
 <dispatchMethods; separator="\n\n">
+<endif>
+<if(struct.isImported)>
+*/
 <endif>
 
 >>
