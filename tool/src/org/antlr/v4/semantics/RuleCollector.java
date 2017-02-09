@@ -6,6 +6,7 @@
 
 package org.antlr.v4.semantics;
 
+import org.antlr.v4.Tool;
 import org.antlr.v4.analysis.LeftRecursiveRuleAnalyzer;
 import org.antlr.v4.misc.OrderedHashMap;
 import org.antlr.v4.misc.Utils;
@@ -57,10 +58,23 @@ public class RuleCollector extends GrammarTreeVisitor {
 		int numAlts = block.getChildCount();
 		Rule r;
 		if ( LeftRecursiveRuleAnalyzer.hasImmediateRecursiveRuleRefs(rule, ID.getText()) ) {
-			r = new LeftRecursiveRule(g, ID.getText(), rule);
+			if ( !g.name.equals(rule.g.name) ) {
+				String prefix = g.tool.importParamsMap.get(rule.g.name);
+				g.tool.importRules_Alts.put(ID.getText(),rule.g.name);
+				r = new LeftRecursiveRule(g, ID.getText(), rule, prefix, true);
+			} else {
+				r = new LeftRecursiveRule(g, ID.getText(), rule, "", false);
+			}
 		}
 		else {
-			r = new Rule(g, ID.getText(), rule, numAlts);
+			System.out.println("RuleCollector " + g.name.equals(rule.g.name) + " \t" + rule.getRuleName() + " " + g.name + " " + rule.g.name);
+			if ( !g.name.equals(rule.g.name) ) {
+				String prefix = g.tool.importParamsMap.get(rule.g.name);
+				g.tool.importRules_Alts.put(ID.getText(),rule.g.name);
+				r = new Rule(g, ID.getText(), rule, numAlts, prefix, true);
+			} else {
+				r = new Rule(g, ID.getText(), rule, numAlts, "", false);
+			}
 		}
 		rules.put(r.name, r);
 
@@ -98,6 +112,11 @@ public class RuleCollector extends GrammarTreeVisitor {
 			String altLabel = alt.altLabel.getText();
 			altLabelToRuleName.put(Utils.capitalize(altLabel), currentRuleName);
 			altLabelToRuleName.put(Utils.decapitalize(altLabel), currentRuleName);
+			System.out.printf("RuleCollector.discoverOuterAlt imported %b %s %s\n", !alt.g.name.equals(g.name), altLabel, alt.g.name);
+			if ( !g.name.equals(alt.g.name) ) {
+				g.tool.importRules_Alts.put(altLabel,alt.g.name);
+			}
+
 		}
 	}
 
@@ -106,7 +125,15 @@ public class RuleCollector extends GrammarTreeVisitor {
 								  GrammarAST block)
 	{
 		int numAlts = block.getChildCount();
-		Rule r = new Rule(g, ID.getText(), rule, numAlts);
+		Rule r ;
+		if ( !g.name.equals(rule.g.name) ) {
+			String prefix = g.tool.importParamsMap.get(rule.g.name);
+			g.tool.importRules_Alts.put(ID.getText(),rule.g.name);
+			r = new Rule(g, ID.getText(), rule, numAlts, prefix, true);
+		} else {
+			r = new Rule(g, ID.getText(), rule, numAlts, "", false);
+		}
+
 		r.mode = currentModeName;
 		if ( !modifiers.isEmpty() ) r.modifiers = modifiers;
 		rules.put(r.name, r);

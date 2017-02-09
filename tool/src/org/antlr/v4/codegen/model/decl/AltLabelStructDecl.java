@@ -18,9 +18,10 @@ import java.util.ArrayList;
 public class AltLabelStructDecl extends StructDecl {
 	public int altNum;
 	public AltLabelStructDecl(OutputModelFactory factory, Rule r,
-							  int altNum, String label)
+							  int altNum, String label,
+							  String prefix, boolean imported)
 	{
-		super(factory, r);
+		super(factory, r, prefix, imported);
 		this.altNum = altNum;
 		this.name = // override name set in super to the label ctx
 			factory.getGenerator().getTarget().getAltLabelContextStructName(label);

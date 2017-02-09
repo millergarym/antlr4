@@ -245,11 +245,12 @@ public class GrammarTransformPipeline {
 			// COPY RULES
 			List<GrammarAST> rules = imp.ast.getNodesWithType(ANTLRParser.RULE);
 			if ( rules!=null ) {
-				for (GrammarAST r : rules) {
+				for (GrammarAST r : rules) {					
 					rootGrammar.tool.log("grammar", "imported rule: "+r.toStringTree());
 					String name = r.getChild(0).getText();
 					boolean rootAlreadyHasRule = rootRuleNames.contains(name);
 					if ( !rootAlreadyHasRule ) {
+//						r.g = imp;
 						RULES.addChild(r); // merge in if not overridden
 						rootRuleNames.add(name);
 					}

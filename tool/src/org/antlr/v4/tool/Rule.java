@@ -62,7 +62,7 @@ public class Rule implements AttributeResolver {
 
 	/** In which grammar does this rule live? */
 	public Grammar g;
-
+	
 	/** If we're in a lexer grammar, we might be in a mode */
 	public String mode;
 
@@ -92,6 +92,9 @@ public class Rule implements AttributeResolver {
 
 	public int numberOfAlts;
 
+	public String prefix;
+	public boolean imported;
+	
 	public boolean isStartRule = true; // nobody calls us
 
 	/** 1..n alts */
@@ -102,13 +105,17 @@ public class Rule implements AttributeResolver {
 
 	public int actionIndex = -1; // if lexer; 0..n-1 for n actions in a rule
 
-	public Rule(Grammar g, String name, RuleAST ast, int numberOfAlts) {
+	public Rule(Grammar g, String name, RuleAST ast, int numberOfAlts, String prefix, boolean imported) {
 		this.g = g;
 		this.name = name;
 		this.ast = ast;
 		this.numberOfAlts = numberOfAlts;
+		this.prefix = prefix;
+		this.imported = imported;
 		alt = new Alternative[numberOfAlts+1]; // 1..n
-		for (int i=1; i<=numberOfAlts; i++) alt[i] = new Alternative(this, i);
+		for (int i=1; i<=numberOfAlts; i++) {
+			alt[i] = new Alternative(this, i);
+		}
 	}
 
 	public void defineActionInAlt(int currentAlt, ActionAST actionAST) {

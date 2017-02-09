@@ -57,7 +57,10 @@ public class RuleFunction extends OutputModelObject {
 	public Rule rule;
 	public AltLabelStructDecl[] altToContext;
 	public boolean hasLookaheadBlock;
+	public String grammarName;
+	public boolean isImported;
 
+	
 	@ModelElement public List<SrcOp> code;
 	@ModelElement public OrderedHashSet<Decl> locals; // TODO: move into ctx?
 	@ModelElement public Collection<AttributeDecl> args = null;
@@ -71,6 +74,8 @@ public class RuleFunction extends OutputModelObject {
 	public RuleFunction(OutputModelFactory factory, Rule r) {
 		super(factory);
 		this.name = r.name;
+		grammarName = factory.getGrammar().name;
+		isImported = r.imported;
 		this.rule = r;
 		if ( r.modifiers!=null && !r.modifiers.isEmpty() ) {
 			this.modifiers = new ArrayList<String>();
@@ -80,7 +85,14 @@ public class RuleFunction extends OutputModelObject {
 
 		index = r.index;
 
-		ruleCtx = new StructDecl(factory, r);
+		String orgGrammar = factory.getGrammar().tool.importRules_Alts.get(r.name);
+		if ( orgGrammar != null ) {
+			String prefix = factory.getGrammar().tool.importParamsMap.get(orgGrammar);
+			System.out.println("Modify rule " + r.name + " prefix:" + prefix + " org:" + orgGrammar);
+			ruleCtx = new StructDecl(factory, r, prefix, true);
+		} else {
+			ruleCtx = new StructDecl(factory, r, "", false);
+		}
 		altToContext = new AltLabelStructDecl[r.getOriginalNumberOfAlts()+1];
 		addContextGetters(factory, r);
 
@@ -139,7 +151,14 @@ public class RuleFunction extends OutputModelObject {
 				Set<Decl> decls = getDeclsForAllElements(alts);
 				for (Pair<Integer, AltAST> pair : entry.getValue()) {
 					Integer altNum = pair.a;
-					altToContext[altNum] = new AltLabelStructDecl(factory, r, altNum, label);
+					String orgGrammar = factory.getGrammar().tool.importRules_Alts.get(label);
+					if ( orgGrammar != null ) {
+						System.out.println("Modify alt " + label);
+						String prefix = factory.getGrammar().tool.importParamsMap.get(orgGrammar);
+						altToContext[altNum] = new AltLabelStructDecl(factory, r, altNum, label, prefix, true);					
+					} else {
+						altToContext[altNum] = new AltLabelStructDecl(factory, r, altNum, label, "", false);					
+					}
 					if (!altLabelCtxs.containsKey(label)) {
 						altLabelCtxs.put(label, altToContext[altNum]);
 					}

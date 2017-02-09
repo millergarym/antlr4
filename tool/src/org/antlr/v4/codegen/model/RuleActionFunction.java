@@ -15,7 +15,8 @@ public class RuleActionFunction extends OutputModelObject {
 	public String name;
 	public String ctxType;
 	public int ruleIndex;
-
+	public String grammarName;
+	
 	/** Map actionIndex to Action */
 	@ModelElement public LinkedHashMap<Integer, Action> actions =
 		new LinkedHashMap<Integer, Action>();
@@ -25,5 +26,6 @@ public class RuleActionFunction extends OutputModelObject {
 		name = r.name;
 		ruleIndex = r.index;
 		this.ctxType = ctxType;
+		grammarName = factory.getGrammar().name;
 	}
 }

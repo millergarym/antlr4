@@ -12,9 +12,13 @@ import org.antlr.v4.codegen.OutputModelFactory;
 public class RuleContextDecl extends Decl {
 	public String ctxName;
 	public boolean isImplicit;
+	public boolean isImported;
+	public String prefix;
 
-	public RuleContextDecl(OutputModelFactory factory, String name, String ctxName) {
+	public RuleContextDecl(OutputModelFactory factory, String name, String ctxName, String prefix, boolean imported) {
 		super(factory, name);
 		this.ctxName = ctxName;
+		this.isImported = imported;
+		this.prefix = prefix;
 	}
 }
